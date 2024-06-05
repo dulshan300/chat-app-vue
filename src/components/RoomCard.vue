@@ -1,7 +1,7 @@
 <template>
     <RouterLink :to="{ name: 'chat.room', params: { id: chat.id } }"
-        class="flex items-start px-4 py-4  rounded-md shadow-sm cursor-pointer hover:bg-blue-600 group"
-        :class="{ 'bg-green-600 text-white': selected, 'bg-white': !selected }">
+        class="flex items-start px-4 py-4  border-b border-chat-gray-light/50 cursor-pointer hover:bg-chat-blue group hover:border-chat-blue"
+        :class="{ 'bg-chat-blue text-white border-chat-blue': selected, 'bg-white': !selected }">
         <!-- user card -->
         <div class="rounded-full w-10 h-10 bg-gray-300 flex justify-center items-center mr-3 text-gray-600 group-hover:text-white"
             :class="{ 'text-white': selected }">

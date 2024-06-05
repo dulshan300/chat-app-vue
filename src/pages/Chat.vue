@@ -1,24 +1,24 @@
 <template>
 
-    <div class="p-20 bg-sky-600 h-screen">
+    <div class=" bg-sky-900 h-screen flex justify-center items-center">
 
-        <div class="h-full w-full bg-white flex shadow-md rounded-md overflow-hidden">
+        <div class="h-5/6 w-5/6 bg-white flex shadow-md rounded-md overflow-hidden">
 
-            <aside class="w-1/5 min-w-[350px] border-r shadow-md flex flex-col bg-gray-50">
+            <aside class="w-1/5 min-w-[350px] border-r  flex flex-col bg-gray-50">
                 <!-- sidebar -->
                 <!-- search component -->
                 <div class="h-16 px-4 relative flex gap-5 items-center border-b">
                     <RouterLink to="/chat" class="text-xl font-bold">
-                        <RiHome2Line class="text-gray-500/40 hover:text-sky-400 " />
+                        <RiHome2Line class="text-chat-gray-light hover:text-chat-blue " />
                     </RouterLink>
                     <input type="text"
-                        class="bg-transparent border border-gray-600/20 rounded-md p-2 w-full relative z-10"
+                        class="bg-transparent border border-chat-gray-light rounded-md p-2 w-full relative z-10 form-input"
                         placeholder="Search">
-                    <RiSearchLine class="text-gray-500/40 absolute right-7 z-0 " />
+                    <RiSearchLine class="text-chat-gray-light absolute right-7 z-0 " />
                 </div>
 
                 <!-- online users -->
-                <div class="flex-1 flex flex-col gap-2 overflow-y-auto p-4">
+                <div class="chat-list flex-1 flex flex-col overflow-y-auto ">
                     <!-- user list -->
                     <template v-for="chat in dummy_chat">
 
@@ -157,4 +157,22 @@ const handle_room_create = () => {
 
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+
+    .chat-list{
+        height: 60vh;
+        overflow-y: auto;
+        &::-webkit-scrollbar {
+            width: 4px;
+            background-color: #f5f5f5;
+        }
+        &::-webkit-scrollbar-thumb {
+            background-color: rgba(#00b0ff,0.5);
+            border-radius: 4px;
+        }
+        &::-webkit-scrollbar-thumb:hover {
+            background-color: #555;
+        }
+    }
+
+</style>

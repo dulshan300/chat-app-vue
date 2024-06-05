@@ -1,5 +1,16 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
 
+:root {
+    --white: #fff;
+    --black: #000;
+    --bg: #f8f8f8;
+    --grey: #999;
+    --dark: #1a1a1a;
+    --light: #e6e6e6;
+    --wrapper: 1000px;
+    --blue: #00b0ff;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -11,7 +22,7 @@
     }
 
     .btn-blue {
-        @apply bg-blue-600 text-white rounded hover:bg-blue-700 active:bg-blue-800;
+        @apply bg-chat-blue text-white rounded hover:bg-sky-700 active:bg-sky-800;
     }
 
     .btn-gray {
@@ -31,7 +42,7 @@
     }
 
     .form-input {
-        @apply bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5;
+        @apply bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded focus:ring-chat-blue focus:border-chat-blue block w-full p-2.5;
     }
 
     .custom-checkbox {
@@ -39,7 +50,7 @@
     }
 
     .custom-checkbox input {
-        @apply w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500;
+        @apply w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-chat-blue;
     }
 }
 
