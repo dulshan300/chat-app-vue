@@ -20,7 +20,7 @@
                 <!-- online users -->
                 <div class="chat-list flex-1 flex flex-col overflow-y-auto ">
                     <!-- user list -->
-                    <template v-for="chat in dummy_chat">
+                    <template v-for="chat in chat_rooms">
 
                         <RoomCard :selected="selected_room == chat.id" :chat="chat" />
 
@@ -36,6 +36,8 @@
 
                     <div class="flex-1 flex flex-col items-center justify-center bg-slate-50 gap-4">
 
+
+
                         <h3 class="text-gray-500 text-xl font-bold">Select a room</h3>
                         <span class="text-gray-400 text-sm">Or</span>
                         <div class="flex items-center gap-5">
@@ -48,22 +50,23 @@
 
                 <!-- if chat id -->
                 <template v-else>
-                    <RouterView></RouterView>
+                    <RouterView :key="route.params.id"></RouterView>
                 </template>
 
             </section>
 
 
             <!-- model -->
-            <Model :isOpen="isOpen" @close="setIsOpen(false)" title="Create a new room">
+            <Model :isOpen="isOpen" @close="() => { setIsOpen(false) }" title="Create a new room">
 
                 <div class="">
 
-                    <form class="form">
+                    <form @submit.prevent="handle_room_create" class="form">
 
                         <div class="fg">
                             <label for="name" class="label">Name</label>
                             <input v-model="create_room.name" type="text" id="name" class="form-input">
+                            <InputError :errors="input_errors" field="name" />
                         </div>
 
                         <div class="fg">
@@ -77,6 +80,7 @@
                             <div v-if="create_room.is_private" class="fg">
                                 <label for="access_key" class="label">Access Key</label>
                                 <input v-model="create_room.access_key" type="text" id="access_key" class="form-input">
+                                <InputError :errors="input_errors" field="access_key" />
                             </div>
                         </Transition>
 
@@ -108,16 +112,41 @@
 <script setup>
 
 import { RiHome2Line, RiSearchLine } from "@remixicon/vue";
-import { Transition, computed, ref, watch } from "vue";
+import { Transition, computed, onBeforeMount, ref, watch } from "vue";
 import { RouterLink, RouterView, useRoute } from "vue-router";
 import RoomCard from "../components/RoomCard.vue";
+import InputError from "../components/common/InputError.vue";
 import Model from "../components/common/model.vue";
-import dummy_chat from '../data/chat.js';
-import { useAuthStore } from "../store/AuthStore.js";
 
-const authStore = useAuthStore()
+import { useAuthStore } from "../store/AuthStore.js";
+import api from "../utill/axios.js";
+import { processAxiosError } from "../utill/helper";
+
+
+const { auth } = useAuthStore()
+
+api.setAuthHeader(auth.token);
 
 const route = useRoute();
+
+
+
+const chat_rooms = ref([]);
+
+const load_chat_rooms = () => {
+    api.get('/chat/rooms')
+        .then(res => {
+            chat_rooms.value = (res.data.data);
+        })
+}
+
+onBeforeMount(() => {
+    // get all the chat roots
+    load_chat_rooms();
+})
+
+
+const input_errors = ref({});
 
 const selected_room = computed(() => {
     return route.params.id
@@ -148,8 +177,22 @@ watch(() => create_room.value.is_private, () => {
     }
 })
 
+
 const handle_room_create = () => {
-    console.log(create_room.value);
+    input_errors.value = {};
+
+    api.post('/chat/rooms', create_room.value)
+        .then(res => {
+            create_room.value.name = "";
+            create_room.value.access_key = randomAccessKey()
+            load_chat_rooms();
+        })
+        .catch(error => {
+
+            const _errors = processAxiosError(error)
+            input_errors.value = _errors
+
+        })
 }
 
 
@@ -158,21 +201,22 @@ const handle_room_create = () => {
 </script>
 
 <style lang="scss" scoped>
+.chat-list {
+    height: 60vh;
+    overflow-y: auto;
 
-    .chat-list{
-        height: 60vh;
-        overflow-y: auto;
-        &::-webkit-scrollbar {
-            width: 4px;
-            background-color: #f5f5f5;
-        }
-        &::-webkit-scrollbar-thumb {
-            background-color: rgba(#00b0ff,0.5);
-            border-radius: 4px;
-        }
-        &::-webkit-scrollbar-thumb:hover {
-            background-color: #555;
-        }
+    &::-webkit-scrollbar {
+        width: 4px;
+        background-color: #f5f5f5;
     }
 
+    &::-webkit-scrollbar-thumb {
+        background-color: rgba(#00b0ff, 0.5);
+        border-radius: 4px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+        background-color: #555;
+    }
+}
 </style>

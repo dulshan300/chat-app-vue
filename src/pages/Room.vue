@@ -1,8 +1,14 @@
 <template>
-    <div class="flex flex-col h-full bg-white">
+    <div class="flex flex-col h-full bg-white relative">
+        <!-- loader -->
+        <Transition>
+            <Loader v-if="loading" />
+
+        </Transition>
+
         <!-- header -->
         <div class="h-16 px-4 flex items-center bg-gray-50">
-            <h3 class="font-bold text-chat-gray text-xl"> Room {{ route.params.id }}</h3>
+            <h3 class="font-bold text-chat-gray text-xl"> {{ room.name }}</h3>
         </div>
         <!-- msg -->
         <div class="flex-1 px-4 py-5">
@@ -64,11 +70,43 @@
 <script setup>
 
 import { RiAttachmentLine, RiEmotionHappyLine, RiSendPlaneLine } from '@remixicon/vue';
+import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { useAuthStore } from '../store/AuthStore.js';
+import api from '../utill/axios.js';
+import Loader from '../components/common/loader.vue';
 
 const route = useRoute();
 const authStore = useAuthStore()
+
+// load chats
+const loading = ref(true);
+
+const room = ref({});
+const chats = ref([]);
+
+const loadChats = () => {
+
+    // room details & user verifications
+    api.get(`/chat/rooms/${route.params.id}`)
+        .then(res => {
+
+            room.value = res.data.data;
+
+            // chats
+            chats.value = res.data.chats
+
+            loading.value = false;
+        })
+
+}
+
+// before mount, its needs to verify that the user is allowd to view this room.
+
+onMounted(() => {
+    loadChats()
+    console.log(route.params.id);
+})
 
 </script>
 
@@ -123,7 +161,6 @@ const authStore = useAuthStore()
 
         .user-img {
             left: -58px;
-            border: 1px solid var(--blue);
         }
 
         &:before {

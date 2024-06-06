@@ -11,4 +11,8 @@ const api = axios.create({
 api.defaults.withCredentials = true;
 api.defaults.withXSRFToken = true;
 
+api.setAuthHeader = (token) => {    
+    api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+}
+
 export default api

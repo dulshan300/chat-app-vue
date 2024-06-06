@@ -1,11 +1,16 @@
+import { useStorage } from '@vueuse/core';
 import { defineStore } from "pinia";
-import { useStorage } from '@vueuse/core'
-import { useRouter } from 'vue-router'
+import { useRouter } from 'vue-router';
 import api from "../utill/axios";
 
 export const useAuthStore = defineStore('auth', () => {
 
-    const router = useRouter();
+    const router = useRouter();    
+
+    const auth = useStorage('auth', {
+        token: null,
+        user: null
+    })
 
     const auth_header = () => {
         return {
@@ -13,10 +18,7 @@ export const useAuthStore = defineStore('auth', () => {
         }
     }
 
-    const auth = useStorage('auth', {
-        token: null,
-        user: null
-    })
+
 
     const login = async (login_data) => {
         auth.value.token = login_data.token;

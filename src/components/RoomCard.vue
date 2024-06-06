@@ -7,17 +7,20 @@
             :class="{ 'text-white': selected }">
             {{ initials(chat.name) }}</div>
         <div class="flex-1 flex flex-col gap-2">
-            <h3 class="font-medium text-gray-700 group-hover:text-white" :class="{ 'text-white': selected }">{{
+            <h3 class="font-medium text-gray-700 group-hover:text-white flex items-center gap-2" :class="{ 'text-white': selected }">{{
                 chat.name
-            }}</h3>
+                }}
+
+                <span v-if="chat.role=='admin'" class="text-[10px] t text-chat-gray bg-chat-gray-light rounded-lg px-2">{{chat.role}}</span>    
+            </h3>
             <p class="text-xs text-gray-500 group-hover:text-white" :class="{ 'text-white': selected }">{{
                 limitText(chat.last_message, 25) }}</p>
         </div>
         <div class="flex flex-col items-center gap-3 h-full">
             <div class="flex-1 flex">
-                <span v-if="chat.new_messages_count > 0"
+                <span v-if="chat.unread_count > 0"
                     class="flex items-center justify-center text-xs font-bold text-white bg-red-500 max-w-5 min-w-5  h-5 rounded-full">{{
-                        chat.new_messages_count }}</span>
+                        chat.unread_count }}</span>
             </div>
             <span class="text-xs text-gray-500 group-hover:text-white" :class="{ 'text-white': selected }">{{
                 dayjs(chat.updated_at).fromNow(true) }}</span>
