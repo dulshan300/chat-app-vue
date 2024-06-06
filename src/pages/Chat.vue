@@ -8,7 +8,7 @@
                 <!-- sidebar -->
                 <!-- search component -->
                 <div class="h-16 px-4 relative flex gap-5 items-center border-b">
-                    <RouterLink to="/chat" class="text-xl font-bold">
+                    <RouterLink to="/" class="text-xl font-bold">
                         <RiHome2Line class="text-chat-gray-light hover:text-chat-blue " />
                     </RouterLink>
                     <input type="text"
@@ -41,7 +41,7 @@
                         <h3 class="text-gray-500 text-xl font-bold">Select a room</h3>
                         <span class="text-gray-400 text-sm">Or</span>
                         <div class="flex items-center gap-5">
-                            <button class="btn btn-blue">Join room</button>
+                            <button @click="show_join_room_modal" class="btn btn-blue">Join room</button>
                             <button @click="setIsOpen(true)" class="btn btn-blue">Create a new room</button>
                         </div>
                     </div>
@@ -50,7 +50,7 @@
 
                 <!-- if chat id -->
                 <template v-else>
-                    <RouterView :key="route.params.id"></RouterView>
+                    <RouterView @accessKeyRequest="show_join_room_modal" :key="route.params.id"></RouterView>
                 </template>
 
             </section>
@@ -97,6 +97,37 @@
 
             </Model>
 
+            <Model :isOpen="is_show_join_modal" @close="close_join_room_modal" title="Join Room">
+
+                <div class="relative">
+
+                    <form @submit.prevent="handel_join_room" class="form">
+
+                        <div class="fg">
+                            <label for="room_id" class="label">Room ID</label>
+                            <input v-model="join_room.room_id" type="text" id="room_id" class="form-input">
+                            <InputError :errors="input_errors" field="room_id" />
+                        </div>
+
+                        <div class="fg">
+                            <label for="acccess_key" class="label">Access Key</label>
+                            <input v-model="join_room.access_key" type="text" id="acccess_key" class="form-input">
+                            <InputError :errors="input_errors" field="access_key" />
+                        </div>
+
+                    </form>
+
+                </div>
+
+                <template v-slot:footer>
+
+                    <button :disabled="join_room_processing" @click="close_join_room_modal" class="btn btn-gray">Close</button>
+                    <button :disabled="join_room_processing" @click="handel_join_room" class="btn btn-blue">Join</button>
+                </template>
+
+
+            </Model>
+
 
         </div>
 
@@ -113,7 +144,7 @@
 
 import { RiHome2Line, RiSearchLine } from "@remixicon/vue";
 import { Transition, computed, onBeforeMount, ref, watch } from "vue";
-import { RouterLink, RouterView, useRoute } from "vue-router";
+import { RouterLink, RouterView, useRoute, useRouter } from "vue-router";
 import RoomCard from "../components/RoomCard.vue";
 import InputError from "../components/common/InputError.vue";
 import Model from "../components/common/model.vue";
@@ -128,8 +159,7 @@ const { auth } = useAuthStore()
 api.setAuthHeader(auth.token);
 
 const route = useRoute();
-
-
+const router = useRouter();
 
 const chat_rooms = ref([]);
 
@@ -192,6 +222,43 @@ const handle_room_create = () => {
             const _errors = processAxiosError(error)
             input_errors.value = _errors
 
+        })
+}
+
+const is_show_join_modal = ref(false)
+
+const join_room = ref({
+    access_key: '',
+    room_id: ''
+});
+
+const join_room_processing = ref(false);
+
+const show_join_room_modal = () => {
+    join_room.value.room_id = route.params.id
+    is_show_join_modal.value = true
+}
+
+const close_join_room_modal = () => {
+
+    is_show_join_modal.value = false
+    router.push({ name: 'home' })
+
+}
+
+const handel_join_room = () => {
+
+    input_errors.value = {};
+
+    api.post(`/chat/rooms/join`, join_room.value)
+        .then(res => {           
+            is_show_join_modal.value = false
+            load_chat_rooms();
+            router.push({ name: 'room', params: { id: join_room.value.room_id } })
+        })
+        .catch(error => {
+            const _errors = processAxiosError(error)
+            input_errors.value = _errors
         })
 }
 

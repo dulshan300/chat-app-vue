@@ -73,11 +73,14 @@ import { RiAttachmentLine, RiEmotionHappyLine, RiSendPlaneLine } from '@remixico
 import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { useAuthStore } from '../store/AuthStore.js';
+import { AxiosError } from 'axios';
 import api from '../utill/axios.js';
 import Loader from '../components/common/loader.vue';
 
 const route = useRoute();
 const authStore = useAuthStore()
+
+const emit = defineEmits(['accessKeyRequest'])
 
 // load chats
 const loading = ref(true);
@@ -97,6 +100,16 @@ const loadChats = () => {
             chats.value = res.data.chats
 
             loading.value = false;
+        })
+        .catch(error => {
+
+            if (error instanceof AxiosError) {
+                if (error.response.status === 403) {
+                    console.log('fire event');
+                    emit('accessKeyRequest')
+                }
+            }
+
         })
 
 }

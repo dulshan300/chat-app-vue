@@ -21,14 +21,19 @@ export const processAxiosError = (errors) => {
 
     if (errors instanceof AxiosError) {
 
-        const ae = errors.response.data.errors;
-        let error = {};
+        if (errors.response.status === 422) {
 
-        for (const [key, value] of Object.entries(ae)) {
-            error[key] = value[0];
+            const ae = errors.response.data.errors;
+            let error = {};
+
+            for (const [key, value] of Object.entries(ae)) {
+                error[key] = value[0];
+            }
+
+            return error;
+
         }
 
-        return error;
 
 
     }

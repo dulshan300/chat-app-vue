@@ -7,11 +7,16 @@
             :class="{ 'text-white': selected }">
             {{ initials(chat.name) }}</div>
         <div class="flex-1 flex flex-col gap-2">
-            <h3 class="font-medium text-gray-700 group-hover:text-white flex items-center gap-2" :class="{ 'text-white': selected }">{{
-                chat.name
+            <h3 class="font-medium text-gray-700 group-hover:text-white flex items-center gap-2"
+                :class="{ 'text-white': selected }">{{
+                    chat.name
                 }}
 
-                <span v-if="chat.role=='admin'" class="text-[10px] t text-chat-gray bg-chat-gray-light rounded-lg px-2">{{chat.role}}</span>    
+                <span v-if="chat.role == 'admin'"
+                    class="text-[10px] t text-chat-gray bg-chat-gray-light rounded-lg px-2">{{ chat.role }}</span>
+                <span v-if="chat.is_private">
+                    <RiLock2Line width="10px" />
+                </span>
             </h3>
             <p class="text-xs text-gray-500 group-hover:text-white" :class="{ 'text-white': selected }">{{
                 limitText(chat.last_message, 25) }}</p>
@@ -35,6 +40,7 @@ import dayjs from 'dayjs';
 
 import { RouterLink, useRoute } from 'vue-router';
 import { limitText } from '../utill/helper';
+import { RiLock2Line } from '@remixicon/vue';
 
 const initials = (name) => name.split(' ').map(n => n.slice(0, 1)).join('').toUpperCase();
 

@@ -17,15 +17,10 @@ const routes = [
             requiresAuth: true
         },
         children: [
+
             {
                 path: '/',
                 name: 'home',
-                component: HomePage
-            },
-            
-            {
-                path: '/chat',
-                name: 'chat',
                 component: ChatPage,
                 children: [
                     {
